@@ -2,12 +2,14 @@ package game
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"Projet-Red/models"
 	"Projet-Red/utils"
 )
-//Introduction du jeu 
+
+//Introduction du jeu
 func IntroLore(p *models.Player) {
 	time.Sleep(600 * time.Millisecond)
 	utils.SlowPrint("Voici ton histoire, "+p.Name, 50*time.Millisecond)
@@ -91,7 +93,7 @@ func StartMenu(p *models.Player) {
 		time.Sleep(600 * time.Millisecond)
 
 		utils.SlowPrint("Fin.", 80*time.Millisecond)
-		return
+		os.Exit(0)
 	}
 }
 

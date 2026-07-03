@@ -6,6 +6,7 @@ import (
 
 func main() {
 	p := game.CharCreation()
-
+	game.IntroLore(&p)
+	game.StartMenu(&p)
 	game.MainMenu(&p)
 }

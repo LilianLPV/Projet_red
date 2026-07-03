@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math/rand/v2"
 )
+
 // Fonction du combat tour par tour
 func Combat(p *models.Player, e models.Monster) bool {
 	utils.Clear()
@@ -73,6 +74,7 @@ func TourJoueur(p *models.Player, e *models.Monster, cs *models.CombatState) boo
 	}
 	return false
 }
+
 // Effet de l'ennemie en combat
 func TourEnnemi(p *models.Player, e *models.Monster, cs *models.CombatState) {
 	if cs.EnnemiEmpoisonne > 0 {
@@ -203,7 +205,12 @@ func CharTurn(p *models.Player, e *models.Monster, cs *models.CombatState) bool 
 
 //Le nombre d'xp gagné et les stats qu'il gagne a chaque level
 
+const Levelmax = 5
+
 func XPWin(p *models.Player, montant int) {
+	if p.Level >= Levelmax {
+		return
+	}
 	p.XP += montant
 	fmt.Println("Vous gagnez", montant, "XP !")
 	if p.XP >= p.XPMax {
@@ -213,7 +220,13 @@ func XPWin(p *models.Player, montant int) {
 		p.HPMax += 10
 		p.HP = p.HPMax
 		p.Damage += 2
-		fmt.Println("NIVEAU SUPÉRIEUR ! Vous êtes niveau", p.Level)
+		if p.Level >= Levelmax {
+			p.XP = 0 
+			fmt.Println("NIVEAU SUPÉRIEUR ! Vous êtes niveau", p.Level, "(niveau maximum atteint)")
+		} else {
+			p.XPMax += 50
+			fmt.Println("NIVEAU SUPÉRIEUR ! Vous êtes niveau", p.Level)
+		}
 	}
 }
 
@@ -225,7 +238,8 @@ func handleVictoire(p *models.Player, e *models.Monster) {
 	fmt.Println("Vous avez vaincu", e.Name, "et gagné", or, "PO !")
 	XPWin(p, e.XPReward)
 }
-//En cas de défaite
+
+// En cas de défaite
 func handleDefaite(p *models.Player) {
 	if p.DejaRessuscite {
 		fmt.Println("Vous succombez définitivement...")
