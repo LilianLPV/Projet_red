@@ -8,7 +8,7 @@ Incarnez un aventurier, choisissez votre classe, explorez, combattez des ennemis
 
 ## Prérequis
 
-### Golang : 1.25.5 ou supérieur (https://go.dev/doc/install)
+### Golang : 1.22 ou supérieur (https://go.dev/doc/install)
 
 ## Installation 
 
@@ -34,15 +34,52 @@ go run main.go
 ```
 
 ## Structure du projet
- 
+
+Le code est organisé **par fonctionnalité** plutôt que par couche technique. Chaque
+fonctionnalité a son propre dossier, et à l'intérieur de chaque dossier, les fichiers
+sont séparés par responsabilité :
+
+- `model.go` — les structures de données et les définitions statiques (aucune logique)
+- `service.go` — la logique métier : calculs, règles du jeu, mutation d'état
+- `display.go` — tout ce qui touche au terminal : affichage (ASCII art, menus,
+  messages) et lecture des choix du joueur
+
 ```
 Projet_red/
-├── main.go            # Point d'entrée du jeu
-├── game/               # Moteur du jeu : menu, combat, création de personnage, scénario
-├── feature/             # Systèmes annexes : marchand, forgeron, potions, inventaire
-├── models/              # Structures de données : joueur, monstres, objets, recettes, statistiques
-└── utils/               # Fonctions utilitaires : affichage, couleurs, lecture des entrées
+├── main.go               # Point d'entrée : crée le personnage, lance l'intro et le menu
+├── feature/               # Toutes les fonctionnalités du jeu, une par dossier
+│   ├── character/          # Le personnage : Player, Stats, Equipment, création, fiche, XP
+│   ├── inventory/           # Le sac à dos : Item, ajout/retrait/quantité d'objets
+│   ├── combat/               # Le combat au tour par tour : Monster, Attack, déroulé des tours
+│   ├── merchant/               # La boutique de Barnabé : achats, attaque spéciale, sac amélioré
+│   ├── blacksmith/              # La forge de Thorin : Recipe, craft d'équipement
+│   └── story/                    # Le scénario : intro, choix de départ, quête principale
+├── menu/                   # Le menu principal : orchestre les fonctionnalités ci-dessus
+└── utils/                   # Fonctions transverses : couleurs, affichage lent, entrées clavier
 ```
+
+`menu/` et `utils/` ne sont pas des fonctionnalités mais du code d'orchestration /
+transverse (comme c'était déjà le cas), donc ils ne sont pas subdivisés en
+model/service/display.
+
+### Dépendances entre dossiers (pas de cycle)
+
+```
+utils
+  ↑
+feature/inventory
+  ↑
+feature/character
+  ↑        ↖
+feature/combat   feature/blacksmith   feature/merchant   feature/story
+  ↑                    ↑                    ↑                 ↑
+              menu (orchestre tout, rien ne dépend de menu)
+```
+
+`inventory` ne connaît rien de `character` : il ne manipule que des listes d'objets.
+C'est `character` qui expose des fonctions comme `AddItem`/`RemoveItem` sur le
+`Player`, en s'appuyant sur `inventory` en interne. Cela évite les imports circulaires
+tout en gardant chaque dossier centré sur une seule responsabilité.
 
 ## Comment jouer
 

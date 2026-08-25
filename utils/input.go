@@ -58,7 +58,7 @@ func ReadName(prompt string) string {
 	}
 }
 
-// Formater le nom 
+// Formater le nom
 
 func FormaterName(s string) string {
 	bas := strings.ToLower(s)
@@ -66,4 +66,3 @@ func FormaterName(s string) string {
 	r[0] = unicode.ToUpper(r[0])
 	return string(r)
 }
-

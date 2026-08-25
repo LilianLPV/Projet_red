@@ -1,12 +1,15 @@
 package main
 
 import (
-	"Projet-Red/game"
+	"Projet-Red/feature/character"
+	"Projet-Red/feature/story"
+	"Projet-Red/menu"
 )
 
 func main() {
-	p := game.CharCreation()
-	game.IntroLore(&p)
-	game.StartMenu(&p)
-	game.MainMenu(&p)
+	p := character.CharCreation()
+	story.IntroLore(&p)
+	if story.StartMenu(&p) {
+		menu.MainMenu(&p)
+	}
 }
